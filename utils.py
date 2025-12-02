@@ -1,7 +1,15 @@
 """유틸리티 함수들"""
 import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
+try:
+    import plotly.express as px
+    import plotly.graph_objects as go
+    PLOTLY_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: plotly could not be imported: {e}")
+    print("Please install plotly: pip install plotly>=5.18.0")
+    PLOTLY_AVAILABLE = False
+    px = None
+    go = None
 from collections import Counter
 import json
 import os
@@ -198,6 +206,11 @@ def get_response(question, university_df, major_df, admission_df):
 
 def create_visualization(vis_type, university_df, major_df, admission_df):
     """시각화 생성"""
+    if not PLOTLY_AVAILABLE:
+        # plotly가 없으면 DataFrame 반환
+        if vis_type in ['university', 'major', 'admission', 'employment']:
+            return None
+        return None
     
     if vis_type == 'university':
         # 대학별 취업률 비교
